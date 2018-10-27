@@ -59,7 +59,7 @@ const lineChartData = {
    
     monthsData: [],
     countData: [],
-    gridTitle:""
+    gridTitle:''
   
   // messages: {
   //   expectedData: [200, 192, 120, 144, 160, 130, 140],
