@@ -25,7 +25,7 @@
       fit
       highlight-current-row
       style="width: 100%;">
-      <el-table-column label="用户ID" align="center" width="65">
+      <el-table-column label="用户ID" align="center" min-width="150px">
         <template slot-scope="scope">
           <span>{{ scope.row.userId }}</span>
         </template>
@@ -45,7 +45,7 @@
           <span class="link-type">{{ scope.row.ip }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="第三方账号" min-width="150px">
+      <el-table-column label="第三方账号" max-width="50px">
         <template slot-scope="scope">
           <span class="link-type" v-if="scope.row.nocheck===0">否</span>
           <span class="link-type" v-if="scope.row.nocheck===1">是</span>
@@ -86,14 +86,14 @@
         </el-form-item> -->
          <!-- <el-form-item label="设备"> -->
         <span class="link-type">用户名: {{ temp.username }}</span>
-           <el-table :data="pwwList"
+           <el-table :data="deviceItmes"
            border
            fit      
            highlight-current-row
           style="width: 100%;">
         <el-table-column label="SN" min-width="50px" align="center">
         <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.deviceSN }}</span>
+          <span class="link-type">{{ scope.row.sn }}</span>
         </template>
         </el-table-column>
 
@@ -202,8 +202,7 @@ export default {
     return {
       tableKey: 0,
       list: null,
-      pwwList: [],
-      fdwList: [],
+      deviceItmes: [],
       total: null,
       listLoading: true,
       listQuery: {
@@ -269,9 +268,9 @@ export default {
         this.total = response.data.total
 
         // Just to simulate the time of the request
-        setTimeout(() => {
+        // setTimeout(() => {
           this.listLoading = false
-        }, 1.5 * 1000)
+        // }, 1.5 * 1000)
       })
     },
     handleFilter() {
@@ -336,15 +335,11 @@ export default {
       })
     },
     getDeviceInfo(row) {
-      //获取设备信息
+      //获取设备信息 , 根据用户域名到不同的服务器获取设备列表信息
       this.temp = Object.assign({}, row) // copy obj
       console.log(JSON.stringify(row))
       fetchUserDevices(row).then(response => {
-      // this.pwwList = response.data.waterDispenserItmes
-      let a = response.data.waterDispenserItmes
-      let b = response.data.feedersItmes
-      this.pwwList = Object.assign({},a , b)
-      // this.fdwList = response.data.feedersItmes
+      this.deviceItmes = response.data.deviceItmes
       })
       
       this.dialogFormVisible = true

@@ -12,13 +12,13 @@
       </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('messages')">
+      <div class="card-panel" @click="handleSetLineChartData('getFeedbackTotalByMonth')">
         <div class="card-panel-icon-wrapper icon-message">
           <svg-icon icon-class="message" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">意见反馈数</div>
-          <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num"/>
+          <count-to :start-val="startFeedbackTotal" :end-val="endFeedbackTotal" :duration="3000" class="card-panel-num"/>
         </div>
       </div>
     </el-col>
@@ -29,18 +29,18 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">在线设备数</div>
-          <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num"/>
+          <count-to :start-val="startDeviceTotal" :end-val="endDeviceTotal" :duration="3200" class="card-panel-num"/>
         </div>
       </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="handleSetLineChartData('shoppings')">
+      <div class="card-panel" @click="handleSetLineChartData('getFirmwareTotalByMonth')">
         <div class="card-panel-icon-wrapper icon-message">
           <svg-icon icon-class="locale" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">固件版本数</div>
-          <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num"/>
+          <count-to :start-val="startFirmwareTotal" :end-val="endFirmwareTotal" :duration="3600" class="card-panel-num"/>
         </div>
       </div>
     </el-col>
@@ -49,7 +49,7 @@
 
 <script>
 import CountTo from 'vue-count-to'
-import { getUserTotal } from '@/api/dashboard'
+import { getDashBoardTotal } from '@/api/dashboard'
 
 export default {
   components: {
@@ -59,26 +59,44 @@ export default {
     return {
       interval: {},
       startUserTotal: 0,
-      endUserTotal: 0
+      endUserTotal: 0,
+      startDeviceTotal: 0,
+      endDeviceTotal: 0,
+      startFeedbackTotal: 0,
+      endFeedbackTotal: 0,
+      startFirmwareTotal: 0,
+      endFirmwareTotal: 0,
     }
   },
   computed: {
     fetchData: function() {
-      getUserTotal().then(response => {
+      getDashBoardTotal().then(response => {
         this.endUserTotal = response.data.userTotal
       })
     }
   },
   created: function() {
-    getUserTotal().then(response => {
+    getDashBoardTotal().then(response => {
       this.endUserTotal = response.data.userTotal
+      this.endDeviceTotal = 0
+      this.endFeedbackTotal = response.data.feedbackTotal
+      this.endFirmwareTotal = response.data.firmwareTotal
     })
   },
   mounted() {
     this.interval = setInterval(() => {
-      getUserTotal().then(response => {
+      getDashBoardTotal().then(response => {
         this.startUserTotal = this.endUserTotal
         this.endUserTotal = response.data.userTotal
+
+        this.startDeviceTotal = this.endDeviceTotal
+        this.endDeviceTotal = response.data.deviceTotal
+
+        this.startFeedbackTotal = this.endFeedbackTotal
+        this.endFeedbackTotal = response.data.feedbackTotal
+
+        this.startFirmwareTotal = this.endFirmwareTotal
+        this.endFirmwareTotal = response.data.firmwareTotal
       })
     }, 5000)
   },
