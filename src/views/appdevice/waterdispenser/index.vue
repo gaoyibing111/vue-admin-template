@@ -40,12 +40,25 @@
           <span>{{ scope.row.deviceSN }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="设备名" min-width="150px">
+      <el-table-column label="设备名" min-width="80px">
         <template slot-scope="scope">
           <span class="link-type">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="时区" min-width="150px">
+          <el-table-column label="是否在线" min-width="60px" align="center">
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.isOnline | statusFilter">
+            <span class="link-type" v-if="scope.row.isOnline===0">否</span> 
+            <span class="link-type" v-if="scope.row.isOnline===1">是</span>
+            </el-tag>
+        </template>
+        </el-table-column>
+         <el-table-column label="通信协议" min-width="80px" align="center">
+        <template slot-scope="scope">
+          <span class="link-type">{{ scope.row.socketType }}</span>
+        </template>
+        </el-table-column>
+      <el-table-column label="时区" min-width="110px">
         <template slot-scope="scope">
           <span class="link-type">{{ scope.row.timeZone }}</span>
         </template>
@@ -61,21 +74,44 @@
           <span class="link-type" v-if="scope.row.isUv != null">是</span>
         </template>
       </el-table-column>
+      <el-table-column label="紫外工作时间区间" max-width="50px">
+        <template slot-scope="scope">
+          <span class="link-type" v-if="scope.row.uvStartAndEnd === null">0,1439</span>
+          <span class="link-type" v-if="scope.row.uvStartAndEnd != null">{{ scope.row.uvStartAndEnd }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="注册服务器" width="150px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.domain }}</span>
         </template>
       </el-table-column>
-       <el-table-column label="固件版本" min-width="150px">
+       <el-table-column label="固件版本" min-width="50px">
         <template slot-scope="scope">
           <span class="link-type" >{{ scope.row.softver }}</span>
         </template>
       </el-table-column>  
      
-      
-      <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
+        <el-table-column label="是否启用定时工作" min-width="50px">
         <template slot-scope="scope">
-          <el-button type="primary" size="mini" @click="getDeviceInfo(scope.row)">查看详细内容</el-button>
+            <el-tag :type="scope.row.isEnabledTiming | statusFilter">
+            <span class="link-type" v-if="scope.row.isEnabledTiming===0">否</span>
+            <span class="link-type" v-if="scope.row.isEnabledTiming===null">否</span> 
+            <span class="link-type" v-if="scope.row.isEnabledTiming===1">是</span>
+            </el-tag>
+        </template>
+      </el-table-column>  
+
+     <el-table-column label="定时工作区间" min-width="70px">
+        <template slot-scope="scope">
+          <span class="link-type" v-if="scope.row.timingStartAndEnd===null">0,1439</span> 
+          <span class="link-type" >{{ scope.row.timingStartAndEnd }}</span>
+        </template>
+      </el-table-column>   
+
+      <el-table-column label="操作"  align="center" width="230" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button content="Top center"  type="primary" size="mini" v-if="scope.row.isOnline===0" disabled @click="getDeviceInfo(scope.row)">查看详细内容</el-button>
+          <el-button type="primary" size="mini" v-if="scope.row.isOnline===1" @click="getDeviceInfo(scope.row)">查看详细内容</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -84,92 +120,58 @@
       <el-pagination v-show="total>0" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" :total="total" background layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
     </div>
 
-    <el-dialog title="用户设备信息" :visible.sync="dialogFormVisible">
-      <!-- <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style=" margin-left:50px;">
-          -->
-        <!-- <el-form-item label="用户名">
-          <span class="link-type">{{ temp.username }}</span>
-        </el-form-item> -->
-         <!-- <el-form-item label="设备"> -->
-        <span class="link-type">用户名: {{ temp.username }}</span>
-           <el-table :data="deviceItmes"
-           border
-           fit      
-           highlight-current-row
-          style="width: 100%;">
-        <el-table-column label="SN" min-width="50px" align="center">
-        <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.sn }}</span>
-        </template>
-        </el-table-column>
+    <el-dialog title="饮水机详细信息" :visible.sync="dialogFormVisible" >
 
-           <el-table-column label="是否在线" min-width="50px" align="center">
-        <template slot-scope="scope">
-            <span class="link-type" v-if="scope.row.isOnline===0">否</span>
-          <span class="link-type" v-if="scope.row.isOnline===1">是</span>
-        </template>
-        </el-table-column>
+        <el-form ref="dataForm"  :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
+         
+          <el-form-item label="SN">
+          <span class="link-type">{{ temp.deviceSN }}</span>
+          </el-form-item>
+          <el-form-item label="设备所处时区">
+          <span class="link-type">{{ temp.timeZone }}</span>
+          </el-form-item>
+           <el-form-item label="是否开启">
+              <span class="link-type"  v-if="deviceItmes.switch===0">否</span>
+          <span class="link-type" v-if="deviceItmes.switch===1">是</span>
+          </el-form-item>
+           <el-form-item label="换水时间">
+          <span class="link-type">{{ deviceItmes.watertime  | moment('timezone', temp.timeZone, 'LLLL') }}</span>
+          </el-form-item>
+           <el-form-item label="指示灯开关">
+           <span class="link-type" v-if="deviceItmes.led===0">关</span>
+          <span class="link-type" v-if="deviceItmes.led!=0">开</span>
+          </el-form-item>
+           <el-form-item label="马达清洗时间">
+          <span class="link-type">{{ deviceItmes.motortime  | moment('timezone', temp.timeZone, 'LLLL') }}</span>
+          </el-form-item>
+           <el-form-item label="滤芯清洗时间">
+          <span class="link-type">{{ deviceItmes.filtertime  | moment('timezone', temp.timeZone, 'LLLL') }}</span>
+          </el-form-item>
+           <el-form-item label="TDS">
+          <span class="link-type">{{ deviceItmes.tds }}</span>
+          </el-form-item>
+          <el-form-item label="水量">
+          <span class="link-type">{{ deviceItmes.level }}</span>
+          </el-form-item>
+ 
+        </el-form>
+
+
         
-        <el-table-column label="固件版本" min-width="50px" align="center">
-        <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.softver }}</span>
-        </template>
-        </el-table-column>
-
-         <el-table-column label="通信协议" min-width="50px" align="center">
-        <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.socketType }}</span>
-        </template>
-        </el-table-column>
-         <el-table-column label="设备昵称" min-width="50px" align="center">
-        <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.name }}</span>
-        </template>
-        </el-table-column>
-
-         <el-table-column label="加网时间" min-width="50px" align="center">
-        <template slot-scope="scope">
-          <span class="link-type">{{ scope.row.dateAdd }}</span>
-        </template>
-        </el-table-column>
-           </el-table>
 
            
-        <!-- </el-form-item> -->
-        <!-- <el-form-item :label="$t('table.status')">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item"/>
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.importance')">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;"/>
-        </el-form-item>
-        <el-form-item :label="$t('table.remark')">
-          <el-input :autosize="{ minRows: 2, maxRows: 4}" v-model="temp.remark" type="textarea" placeholder="Please input"/>
-        </el-form-item> -->
-      <!-- </el-form> -->
-      <div slot="footer" class="dialog-footer">
         
-        <!-- <el-button @click="dialogFormVisible = false">{{ $t('table.cancel') }}</el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">{{ $t('table.confirm') }}</el-button> -->
+      <div slot="footer" class="dialog-footer">
+       
       </div>
     </el-dialog>
-<!-- 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel"/>
-        <el-table-column prop="pv" label="Pv"/>
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
-      </span>
-    </el-dialog> -->
+
 
   </div>
 </template>
 
 <script>
-import { fetchList } from '@/api/appDevice'
+import { fetchList , fetchPwwDetail } from '@/api/appDevice'
 import waves from '@/directive/waves' // 水波纹指令
 import { serverList } from '@/utils/serverlist'
 
@@ -199,10 +201,7 @@ const waterTypeKeyValue = waterTypeOptions.reduce((acc, cur) => {
   return acc
 }, {})
 
-// const serverListKeyValue = serverListTypeOptions.reduce((acc, cur) => {
-//   acc[cur.name] = cur.domain
-//   return acc
-// }, {})
+ 
 
 export default {
   name: 'AppUserTable',
@@ -211,22 +210,27 @@ export default {
   },
   filters: {
     statusFilter(status) {
+
       const statusMap = {
-        published: 'success',
+        1: 'success',
         draft: 'info',
-        deleted: 'danger'
+        0: 'danger',
+        null: 'danger'
       }
       return statusMap[status]
     },
     typeFilter(type) {
       return calendarTypeKeyValue[type]
+    },
+    timeFilter(){
+
     }
   },
   data() {
     return {
       tableKey: 0,
       list: null,
-      deviceItmes: [],
+      deviceItmes: {},
       total: null,
       listLoading: true,
       listQuery: {
@@ -248,13 +252,13 @@ export default {
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
+        switch: null,
+        watertime: null,
+        led: null,
+        motortime: null,
+        filtertime: null,
+        tds: null,
+        level: null
       },
       dialogFormVisible: false,
       dialogStatus: '',
@@ -364,13 +368,13 @@ export default {
     },
     getDeviceInfo(row) {
       //获取设备信息 , 根据用户域名到不同的服务器获取设备列表信息
-      // this.temp = Object.assign({}, row) // copy obj
-      // console.log(JSON.stringify(row))
-      // fetchUserDevices(row).then(response => {
-      // this.deviceItmes = response.data.deviceItmes
-      // })
+      this.temp = Object.assign({}, row) // copy obj
+      console.log(JSON.stringify(row))
+      fetchPwwDetail(row).then(response => {
+      this.deviceItmes = response.data
+      })
       
-      // this.dialogFormVisible = true
+      this.dialogFormVisible = true
       
     },
     updateData() {

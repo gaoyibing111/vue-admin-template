@@ -11,7 +11,7 @@ export function fetchList(query) {
 
 export function fetchUserDevices(query) {
   return request({
-    baseURL: 'http://localhost:8088',
+    baseURL: 'http://' + query.domain + ':8088',
     url: '/admin/appUser/deviceInfo',
     method: 'get',
     params: query

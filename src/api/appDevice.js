@@ -13,11 +13,11 @@ export function fetchList(query) {
   })
 }
 
-// export function fetchUserDevices(query) {
-//   return request({
-//     baseURL: 'http://localhost:8088',
-//     url: '/admin/appUser/deviceInfo',
-//     method: 'get',
-//     params: query
-//   })
-// }
+export function fetchPwwDetail(query) {
+  return request({
+    baseURL: 'http://' + query.domain + ':8088',
+    url: '/admin/appDevice/pww/detail',
+    method: 'get',
+    params: query
+  })
+}

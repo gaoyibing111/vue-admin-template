@@ -91,7 +91,7 @@
            fit      
            highlight-current-row
           style="width: 100%;">
-        <el-table-column label="SN" min-width="50px" align="center">
+        <el-table-column label="SN" min-width="60px" align="center">
         <template slot-scope="scope">
           <span class="link-type">{{ scope.row.sn }}</span>
         </template>
@@ -99,8 +99,12 @@
 
            <el-table-column label="是否在线" min-width="50px" align="center">
         <template slot-scope="scope">
-            <span class="link-type" v-if="scope.row.isOnline===0">否</span>
-          <span class="link-type" v-if="scope.row.isOnline===1">是</span>
+          <el-tag :type="scope.row.isOnline | statusFilter">
+            <span class="link-type" v-if="scope.row.isOnline===0">否</span> 
+            <span class="link-type" v-if="scope.row.isOnline===1">是</span>
+            </el-tag>
+            <!-- <span class="link-type" v-if="scope.row.isOnline===0">否</span>
+          <span class="link-type" v-if="scope.row.isOnline===1">是</span> -->
         </template>
         </el-table-column>
         
@@ -188,9 +192,9 @@ export default {
   filters: {
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger'
+        1: 'success',
+        // 0: 'info',
+        0: 'danger'
       }
       return statusMap[status]
     },

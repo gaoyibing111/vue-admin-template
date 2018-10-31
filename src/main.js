@@ -17,6 +17,11 @@ import '@/permission' // permission control
 
 Vue.use(ElementUI, { locale })
 
+require('moment/locale/zh-cn')
+import VueMoment from 'vue-moment'
+import moment from 'moment-timezone'
+Vue.use(VueMoment, { moment })
+
 Vue.config.productionTip = false
 
 new Vue({
