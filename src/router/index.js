@@ -72,7 +72,7 @@ export const constantRouterMap = [
       },
       {
         path: '/feeder',
-        component: () => import('@/views/appdevice/waterdispenser/index'), // Parent router-view
+        component: () => import('@/views/appdevice/feeder/index'), // Parent router-view
         name: '喂食器',
         meta: { title: '喂食器' }
       },

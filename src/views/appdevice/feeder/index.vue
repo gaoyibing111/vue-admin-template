@@ -6,9 +6,9 @@
         <el-option v-for="item in serverListTypeOptions" :key="item.name" :label="item.name" :value="item.domain"/>
       </el-select>
      
-      <el-select v-model="listQuery.deviceType" placeholder="类型"  class="filter-item" style="width: 130px">
+      <!-- <el-select v-model="listQuery.deviceType" placeholder="类型"  class="filter-item" style="width: 130px">
         <el-option v-for="item in waterTypeOptions" :key="item.name" :label="item.name" :value="item.value"/>
-      </el-select>
+      </el-select> -->
 
       <el-input placeholder="SN" v-model="listQuery.sn" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter"/>
 
@@ -68,18 +68,6 @@
           <span class="link-type">{{ scope.row.dateAdd }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="紫外杀菌" max-width="50px">
-        <template slot-scope="scope">
-          <span class="link-type" v-if="scope.row.isUv === null">否</span>
-          <span class="link-type" v-if="scope.row.isUv != null">是</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="紫外工作时间区间" max-width="50px">
-        <template slot-scope="scope">
-          <span class="link-type" v-if="scope.row.uvStartAndEnd === null">0,1439</span>
-          <span class="link-type" v-if="scope.row.uvStartAndEnd != null">{{ scope.row.uvStartAndEnd }}</span>
-        </template>
-      </el-table-column>
       <el-table-column label="注册服务器" width="150px" align="center">
         <template slot-scope="scope">
           <span>{{ scope.row.domain }}</span>
@@ -90,23 +78,6 @@
           <span class="link-type" >{{ scope.row.softver }}</span>
         </template>
       </el-table-column>  
-     
-        <el-table-column label="是否启用定时工作" min-width="50px">
-        <template slot-scope="scope">
-            <el-tag :type="scope.row.isEnabledTiming | statusFilter">
-            <span class="link-type" v-if="scope.row.isEnabledTiming===0">否</span>
-            <span class="link-type" v-if="scope.row.isEnabledTiming===null">否</span> 
-            <span class="link-type" v-if="scope.row.isEnabledTiming===1">是</span>
-            </el-tag>
-        </template>
-      </el-table-column>  
-
-     <el-table-column label="定时工作区间" min-width="70px">
-        <template slot-scope="scope">
-          <span class="link-type" v-if="scope.row.timingStartAndEnd===null">0,1439</span> 
-          <span class="link-type" >{{ scope.row.timingStartAndEnd }}</span>
-        </template>
-      </el-table-column>   
 
       <el-table-column label="操作"  align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -120,9 +91,9 @@
       <el-pagination v-show="total>0" :current-page="listQuery.page" :page-sizes="[10,20,30, 50]" :page-size="listQuery.limit" :total="total" background layout="total, sizes, prev, pager, next, jumper" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
     </div>
 
-    <el-dialog title="饮水机详细信息" :visible.sync="dialogFormVisible" >
+    <el-dialog title="喂食器详细信息" :visible.sync="dialogFormVisible" >
 
-        <el-form ref="dataForm"  :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 400px; margin-left:50px;">
+        <el-form ref="dataForm"  :rules="rules" :model="temp" label-position="left" label-width="150px" style="width: 400px; margin-left:50px;">
          
           <el-form-item label="SN">
           <span class="link-type">{{ temp.deviceSN }}</span>
@@ -130,10 +101,28 @@
           <el-form-item label="设备所处时区">
           <span class="link-type">{{ temp.timeZone }}</span>
           </el-form-item>
-           <el-form-item label="是否开启">
-              <span class="link-type"  v-if="deviceItmes.switch===0">否</span>
-          <span class="link-type" v-if="deviceItmes.switch===1">是</span>
+           <el-form-item label="喂食器储粮状态">
+          <span class="link-type"  v-if="deviceItmes.amount===1">大于0.5L</span>
+          <span class="link-type"  v-if="deviceItmes.amount===2">小于于0.5L</span>
+          <span class="link-type"  v-if="deviceItmes.amount===3">用尽</span>
+          <span class="link-type"  v-if="deviceItmes.amount===4">堵粮</span>
           </el-form-item>
+          <el-form-item label="当前的状态">
+          <span class="link-type"  v-if="deviceItmes.status===0">待机</span>
+          <span class="link-type"  v-if="deviceItmes.status===1">正在出粮</span>
+          </el-form-item>
+          <el-form-item label="是否手动出粮">
+          <span class="link-type"  v-if="deviceItmes.manual===1">是</span>
+          <span class="link-type"  v-if="deviceItmes.manual===0">否</span>
+          </el-form-item>
+          <el-form-item label="一键出粮的分数">
+          <span class="link-type">{{ deviceItmes.qty }}</span>
+          </el-form-item>
+          <el-form-item label="标准规则是否有效">
+          <span class="link-type"  v-if="deviceItmes.en===1">有效</span>
+          <span class="link-type"  v-if="deviceItmes.en===0">无效</span>
+          </el-form-item>
+<!--           
            <el-form-item label="换水时间">
           <span class="link-type">{{ deviceItmes.watertime  | moment('timezone', temp.timeZone, 'LLLL') }}</span>
           </el-form-item>
@@ -146,17 +135,8 @@
           </el-form-item>
            <el-form-item label="滤芯清洗时间">
           <span class="link-type">{{ deviceItmes.filtertime  | moment('timezone', temp.timeZone, 'LLLL') }}</span>
-          </el-form-item>
-           <el-form-item label="TDS">
-          <span class="link-type">{{ deviceItmes.tds }}</span>
-          </el-form-item>
-          <el-form-item label="水量">
-          <span class="link-type"  v-if="deviceItmes.level===0">无水</span>
-          <span class="link-type" v-if="deviceItmes.level===1">短缺</span>
-          <span class="link-type"  v-if="deviceItmes.level===2">偏少</span>
-          <span class="link-type" v-if="deviceItmes.level===3">正常</span>
-          <span class="link-type" v-if="deviceItmes.level===4">充足</span>
-          </el-form-item>
+          </el-form-item> -->
+          
  
         </el-form>
 
@@ -175,7 +155,7 @@
 </template>
 
 <script>
-import { fetchList , fetchPwwDetail } from '@/api/appDevice'
+import { fetchFdwList , fetchFdwDetail } from '@/api/appDevice'
 import waves from '@/directive/waves' // 水波纹指令
 import { serverList } from '@/utils/serverlist'
 
@@ -299,7 +279,7 @@ export default {
     },
     getList() {
       this.listLoading = true
-      fetchList(this.listQuery).then(response => {
+      fetchFdwList(this.listQuery).then(response => {
         this.list = response.data.items
         this.total = response.data.total
 
@@ -374,7 +354,7 @@ export default {
       //获取设备信息 , 根据用户域名到不同的服务器获取设备列表信息
       this.temp = Object.assign({}, row) // copy obj
       console.log(JSON.stringify(row))
-      fetchPwwDetail(row).then(response => {
+      fetchFdwDetail(row).then(response => {
       this.deviceItmes = response.data
       })
       
