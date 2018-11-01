@@ -2,7 +2,6 @@ import request from '@/utils/request'
 
 export function getDashBoardTotal() {
   return request({
-    baseURL: 'http://localhost:8088',
     url: '/admin/dashboard/count',
     method: 'get'
   })
@@ -30,7 +29,6 @@ export async function getDashBoardPanel(type) {
     case 'getUserTotalByMonth':
       lineChartData.gridTitle = '近半年每月用户注册数'
       resp = await request({
-        baseURL: 'http://localhost:8088',
         url: '/admin/getUserTotalByMonth',
         method: 'get'
       })
@@ -38,7 +36,6 @@ export async function getDashBoardPanel(type) {
     case 'getDeviceTotalByMonth':
       lineChartData.gridTitle = '近半年每月设备注册数' //将所有服务器设备进行合计
       resp = await request({
-        baseURL: 'http://localhost:8088',
         url: '/admin/getDeviceTotalByMonth',
         method: 'get'
       })
@@ -46,7 +43,6 @@ export async function getDashBoardPanel(type) {
     case 'getFeedbackTotalByMonth':
       lineChartData.gridTitle = '近半年每月意见反馈数' //将所有服务器设备进行合计
       resp = await request({
-        baseURL: 'http://localhost:8088',
         url: '/admin/getFeedbackTotalByMonth',
         method: 'get'
       })
@@ -54,7 +50,6 @@ export async function getDashBoardPanel(type) {
     case 'getFirmwareTotalByMonth':
       lineChartData.gridTitle = '近半年每月固件发布数' //将所有服务器设备进行合计
       resp = await request({
-        baseURL: 'http://localhost:8088',
         url: '/admin/getFirmwareTotalByMonth',
         method: 'get'
       })
@@ -62,7 +57,6 @@ export async function getDashBoardPanel(type) {
     default:
       lineChartData.gridTitle = '近半年每月用户注册数'
       resp = await request({
-        baseURL: 'http://localhost:8088',
         url: '/admin/getUserTotalByMonth',
         method: 'get'
       })

@@ -6,7 +6,7 @@ export function fetchList(query) {
     query.domain = 'as.revogi.net'
   }
   return request({
-    baseURL: 'http://' + query.domain + ':8088',
+    baseURL: process.env.BASE_API + query.domain.split('.')[0],
     url: '/admin/appDevice/pww/list',
     method: 'get',
     params: query
@@ -15,7 +15,7 @@ export function fetchList(query) {
 
 export function fetchPwwDetail(query) {
   return request({
-    baseURL: 'http://' + query.domain + ':8088',
+    baseURL: process.env.BASE_API + query.domain.split('.')[0],
     url: '/admin/appDevice/pww/detail',
     method: 'get',
     params: query
