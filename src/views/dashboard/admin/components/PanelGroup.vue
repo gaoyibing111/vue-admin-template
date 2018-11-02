@@ -78,7 +78,7 @@ export default {
   created: function() {
     getDashBoardTotal().then(response => {
       this.endUserTotal = response.data.userTotal
-      this.endDeviceTotal = 0
+      this.endDeviceTotal = response.data.deviceTotal
       this.endFeedbackTotal = response.data.feedbackTotal
       this.endFirmwareTotal = response.data.firmwareTotal
     })
